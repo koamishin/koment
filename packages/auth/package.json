@@ -5,6 +5,7 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
+    "build": "echo 'auth package built'",
     "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
     "format": "prettier --check '**/*.{mjs,ts,json}' ",
@@ -14,7 +15,6 @@
     "@auth/kysely-adapter": "0.4.2",
     "@saasfly/db": "workspace:*",
     "@t3-oss/env-nextjs": "0.8.0",
-    "next": "14.2.35",
     "next-auth": "4.24.7",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -25,6 +25,7 @@
     "@saasfly/prettier-config": "workspace:*",
     "@saasfly/typescript-config": "workspace:*",
     "eslint": "8.57.0",
+    "next": "14.2.35",
     "prettier": "3.9.9",
     "typescript": "5.9.3"
   },

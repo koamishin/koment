@@ -17,8 +17,10 @@
     }
   },
   "scripts": {
+    "build": "echo 'common built'",
     "clean": "rm -rf .turbo node_modules",
-    "format": "prettier --check '**/*.{mjs,ts,json}' "
+    "format": "prettier --check '**/*.{mjs,ts,json}' ",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@saasfly/ui": "workspace:*",

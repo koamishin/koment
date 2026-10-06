@@ -10,6 +10,7 @@
     }
   },
   "scripts": {
+    "build": "echo 'ui built'",
     "clean": "git clean -xdf .turbo node_modules",
     "format": "prettier --check '**/*.{ts,tsx}' ",
     "lint": "eslint ."
