@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { cn } from "@saasfly/ui";
+import { sanitizeClerkPublishableKey } from "~/utils/clerk-key";
 import { Toaster } from "@saasfly/ui/toaster";
 
 import { TailwindIndicator } from "~/components/tailwind-indicator";
@@ -122,11 +123,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const envKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  const publishableKey =
-    envKey && (envKey.startsWith("pk_test_") || envKey.startsWith("pk_live_")) && envKey.length > 20
-      ? envKey
-      : "pk_test_bW9jay1jbGVyay1pbnN0YW5jZS5hY2NvdW50cy5kZXYk";
+  const publishableKey = sanitizeClerkPublishableKey(
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  );
 
   return (
     <ClerkProvider publishableKey={publishableKey}>
