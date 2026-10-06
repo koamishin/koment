@@ -28,6 +28,8 @@ jobs:
         with:
           module: module.mjs
           build-command: bun run build
+        env:
+          SKIP_ENV_VALIDATION: "1"
 
   teardown:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
