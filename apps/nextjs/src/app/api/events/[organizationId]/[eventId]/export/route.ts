@@ -6,6 +6,7 @@ import { db, OrgRole } from "@saasfly/db";
 import { getPlanEntitlements } from "@saasfly/api/entitlements";
 import { requireOrgRole } from "@saasfly/api/permissions";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 function toCsvCell(value: unknown): string {

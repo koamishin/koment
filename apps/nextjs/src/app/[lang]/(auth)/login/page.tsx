@@ -39,9 +39,9 @@ export default async function LoginPage({
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="mb-2 flex items-center justify-center gap-2">
             <Icons.Trophy className="h-10 w-10 text-amber-500" />
-            <span className="font-black text-3xl tracking-tight">Koment</span>
+            <span className="text-3xl font-black tracking-tight">Koment</span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">
             {dict.login.welcome_back}

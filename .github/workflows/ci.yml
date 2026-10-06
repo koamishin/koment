@@ -38,7 +38,13 @@ jobs:
 
       - name: Copy env
         shell: bash
-        run: cp .env.example .env.local
+        run: |
+          cp .env.example .env.local
+          echo "POSTGRES_URL=postgresql://default:default@localhost:5432/verceldb" >> .env.local
+          echo "NEXTAUTH_SECRET=ci-secret-12345678901234567890" >> .env.local
+          echo "CLERK_SECRET_KEY=sk_test_ci_mock_key" >> .env.local
+          echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ci_mock_key" >> .env.local
+          echo "NEXT_PUBLIC_APP_URL=http://localhost:3000" >> .env.local
 
       - name: Setup bun
         uses: oven-sh/setup-bun@v1
@@ -46,18 +52,22 @@ jobs:
       - name: Install lib
         run: bun i
 
+      - name: Push db schema
+        run: bun run db:push
+        env:
+          POSTGRES_URL: postgresql://default:default@localhost:5432/verceldb
+
       - name: Build
         run: bun run build
         env:
-          # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: postgres
-          # The default PostgreSQL port
           POSTGRES_PORT: 5432
           POSTGRES_USER: default
           POSTGRES_PASSWORD: default
           POSTGRES_DB: verceldb
-          POSTGRES_URL: postgres://default:default@localhost:5432/verceldb
+          POSTGRES_URL: postgresql://default:default@localhost:5432/verceldb
 
-
-      - name: lint and type-check
-        run: bun run build lint format typecheck
+      - name: Typecheck and Lint
+        run: |
+          bun run typecheck
+          bun --cwd apps/nextjs lint

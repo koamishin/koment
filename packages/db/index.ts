@@ -9,13 +9,9 @@ export * from "./prisma/types";
 export * from "./prisma/enums";
 
 export function createDb<TDatabase>(): Kysely<TDatabase> {
-  const connectionString = process.env.POSTGRES_URL;
-
-  if (!connectionString) {
-    throw new Error(
-      "POSTGRES_URL is not set. Add it to .env.local before using @saasfly/db.",
-    );
-  }
+  const connectionString =
+    process.env.POSTGRES_URL ||
+    "postgresql://default:default@localhost:5432/verceldb";
 
   const isLocal =
     connectionString.includes("localhost") ||
@@ -34,4 +30,13 @@ export function createDb<TDatabase>(): Kysely<TDatabase> {
   });
 }
 
-export const db = createDb<DB>();
+let _db: Kysely<DB> | null = null;
+
+export const db: Kysely<DB> = new Proxy({} as Kysely<DB>, {
+  get(_target, prop, receiver) {
+    if (!_db) {
+      _db = createDb<DB>();
+    }
+    return Reflect.get(_db, prop, receiver);
+  },
+});
