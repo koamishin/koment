@@ -50,3 +50,5 @@ package-lock.json
 .idea/
 
 .env
+.prisma-composer/
+.alchemy/

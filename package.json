@@ -21,6 +21,7 @@
     "@turbo/gen": "2.11.7",
     "check-dependency-version-consistency": "6.0.0",
     "prettier": "3.9.9",
+    "prisma": "8.0.0-rc.15",
     "tailwind-config-viewer": "^2.0.4",
     "turbo": "2.11.7",
     "typescript": "5.9.3"
@@ -36,6 +37,19 @@
   ],
   "packageManager": "bun@1.4.2",
   "dependencies": {
-    "@clerk/nextjs": "^6.39.7"
+    "@clerk/nextjs": "^6.39.7",
+    "@prisma/composer": "0.20.0",
+    "@prisma/composer-prisma-cloud": "0.20.0",
+    "alchemy": "2.0.0-beta.74",
+    "effect": "4.0.0-rc.112"
+  },
+  "overrides": {
+    "@effect/platform-bun": "4.0.0-rc.112",
+    "@effect/platform-node": "4.0.0-rc.112",
+    "@effect/platform-node-shared": "4.0.0-rc.112",
+    "@effect/sql-d1": "4.0.0-rc.112",
+    "@effect/sql-pg": "4.0.0-rc.112",
+    "@effect/vitest": "4.0.0-rc.112",
+    "effect": "4.0.0-rc.112"
   }
 }
