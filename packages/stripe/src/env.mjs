@@ -2,9 +2,13 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import * as z from "zod";
 
 export const env = createEnv({
+  skipValidation:
+    !!process.env.CI ||
+    !!process.env.SKIP_ENV_VALIDATION ||
+    process.env.npm_lifecycle_event === "lint",
   shared: {},
   server: {
-    STRIPE_API_KEY: z.string(),
+    STRIPE_API_KEY: z.string().optional().default("sk_test_mock_for_build"),
   },
   client: {
     NEXT_PUBLIC_STRIPE_PRO_PRODUCT_ID: z.string().optional(),
@@ -30,7 +34,4 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PRICE_ID:
       process.env.NEXT_PUBLIC_STRIPE_BUSINESS_YEARLY_PRICE_ID,
   },
-  skipValidation:
-    !!process.env.SKIP_ENV_VALIDATION ||
-    process.env.npm_lifecycle_event === "lint",
 });

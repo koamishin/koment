@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 import { handleEvent, stripe, type Stripe } from "@saasfly/stripe";
 
 import { env } from "~/env.mjs";
