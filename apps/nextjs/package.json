@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "contentlayer2 build && bun with-env next build && (bun x opennextjs-cloudflare build --skipNextBuild --dangerouslyUseUnsupportedNextVersion || true)",
-    "deploy": "bun x opennextjs-cloudflare deploy",
+    "build": "contentlayer2 build && bun with-env next build && (opennextjs-cloudflare build --skipNextBuild --dangerouslyUseUnsupportedNextVersion || true)",
+    "deploy": "opennextjs-cloudflare deploy",
     "clean": "git clean -xdf .next .turbo node_modules",
     "dev": "bun with-env next dev",
     "lint": " bun with-env next lint --quiet",

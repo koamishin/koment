@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@turbo/gen": "2.11.7",
+    "@turbo/linux-64": "2.11.7",
     "check-dependency-version-consistency": "6.0.0",
     "prettier": "3.9.9",
     "prisma": "8.0.0-rc.15",
@@ -26,6 +27,16 @@
     "turbo": "2.11.7",
     "typescript": "5.9.3"
   },
+  "trustedDependencies": [
+    "@clerk/shared",
+    "@prisma/engines",
+    "@tsparticles/engine",
+    "@vercel/speed-insights",
+    "contentlayer2",
+    "esbuild",
+    "protobufjs",
+    "workerd"
+  ],
   "engines": {
     "node": ">=18"
   },
