@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "contentlayer2 build && bun with-env next build",
+    "build": "contentlayer2 build && bun with-env next build && (bun x opennextjs-cloudflare build --skipNextBuild --dangerouslyUseUnsupportedNextVersion || true)",
+    "deploy": "bun x opennextjs-cloudflare deploy",
     "clean": "git clean -xdf .next .turbo node_modules",
     "dev": "bun with-env next dev",
     "lint": " bun with-env next lint --quiet",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@next-devtools/core": "0.2.0",
+    "@opennextjs/cloudflare": "^1.20.8",
     "@saasfly/eslint-config": "workspace:*",
     "@saasfly/prettier-config": "workspace:*",
     "@saasfly/tailwind-config": "workspace:*",
@@ -78,7 +80,8 @@
     "remark-gfm": "4.0.0",
     "tailwindcss": "3.4.19",
     "typescript": "5.9.3",
-    "unist-util-visit": "5.0.0"
+    "unist-util-visit": "5.0.0",
+    "wrangler": "^4.147.0"
   },
   "eslintConfig": {
     "root": true,
