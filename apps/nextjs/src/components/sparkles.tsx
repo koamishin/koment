@@ -15,7 +15,7 @@ export function Sparkless() {
   return (
     <div className="flex flex-col items-center justify-center overflow-hidden rounded-md">
       <h1 className="relative z-20 text-center font-bold text-black dark:text-white">
-        Saasfly: A new SaaS player?
+        Koment: Modern Event &amp; Esports Platform
       </h1>
       {/*<div className="relative h-40 w-[40rem]">*/}
       {/*  /!* Gradients *!/*/}

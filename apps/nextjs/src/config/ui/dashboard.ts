@@ -25,9 +25,29 @@ export const getDashboardConfig = async ({
     ],
     sidebarNav: [
       {
-        id: "clusters",
-        title: dict.common.dashboard.sidebar_nav_clusters,
-        href: "/dashboard/",
+        id: "dashboard",
+        title: "Overview",
+        href: "/dashboard",
+      },
+      {
+        id: "tournaments",
+        title: "Tournaments",
+        href: "/dashboard/tournaments",
+      },
+      {
+        id: "events",
+        title: dict.event.browse_events,
+        href: "/events",
+      },
+      {
+        id: "registrations",
+        title: dict.event.my_registrations,
+        href: "/dashboard/registrations",
+      },
+      {
+        id: "organizations",
+        title: dict.event.orgs,
+        href: "/dashboard/organizations",
       },
       {
         id: "billing",

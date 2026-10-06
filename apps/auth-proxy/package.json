@@ -16,12 +16,12 @@
     "@saasfly/prettier-config": "workspace:*",
     "@saasfly/tailwind-config": "workspace:*",
     "@saasfly/typescript-config": "workspace:*",
-    "@types/node": "20.12.12",
+    "@types/node": "20.19.43",
     "eslint": "8.57.0",
     "h3": "1.11.1",
     "nitropack": "2.9.6",
-    "prettier": "3.2.5",
-    "typescript": "5.4.5"
+    "prettier": "3.9.9",
+    "typescript": "5.9.3"
   },
   "eslintConfig": {
     "root": true,

@@ -9,6 +9,8 @@
     "./lambda": "./src/lambda.ts",
     "./transformer": "./src/transformer.ts",
     "./resend": "./src/email.ts",
+    "./entitlements": "./src/entitlements.ts",
+    "./permissions": "./src/permissions.ts",
     "./MagicLinkEmail": "./src/emails/magic-link-email.tsx",
     "./subscriptions": "./src/subscriptions.ts"
   },
@@ -27,13 +29,13 @@
   "dependencies": {
     "@saasfly/auth": "workspace:*",
     "@saasfly/db": "workspace:*",
-    "@trpc/client": "10.44.1",
-    "@trpc/server": "10.44.1",
+    "@trpc/client": "10.45.4",
+    "@trpc/server": "10.45.4",
     "@t3-oss/env-nextjs": "0.8.0",
     "superjson": "2.2.1",
     "dinero.js": "2.0.0-alpha.14",
     "@dinero.js/currencies": "2.0.0-alpha.14",
-    "zod": "3.22.4",
+    "zod": "3.25.76",
     "zod-form-data": "2.0.2"
   },
   "devDependencies": {
@@ -41,8 +43,8 @@
     "@saasfly/prettier-config": "workspace:*",
     "@saasfly/typescript-config": "workspace:*",
     "eslint": "8.57.0",
-    "prettier": "3.2.5",
-    "typescript": "5.4.5"
+    "prettier": "3.9.9",
+    "typescript": "5.9.3"
   },
   "eslintConfig": {
     "root": true,

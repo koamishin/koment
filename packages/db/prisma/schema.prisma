@@ -101,3 +101,226 @@ enum Status {
   STOPPED
   DELETED
 }
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  STAFF
+  MEMBER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELED
+  COMPLETED
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELED
+}
+
+enum CheckInMethod {
+  QR
+  MANUAL
+}
+
+enum FieldType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  EMAIL
+  PHONE
+  DATE
+  SELECT
+  CHECKBOX
+}
+
+model Organization {
+  id         Int              @id @default(autoincrement())
+  name       String
+  slug       String           @unique
+  joinCode   String           @unique
+  authUserId String
+  plan       SubscriptionPlan @default(FREE)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @default(now())
+
+  @@index([authUserId])
+}
+
+model OrgMember {
+  id             Int      @id @default(autoincrement())
+  organizationId Int
+  authUserId     String
+  email          String
+  name           String?
+  role           OrgRole  @default(MEMBER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+
+  @@unique([organizationId, authUserId])
+  @@index([authUserId])
+  @@index([organizationId])
+}
+
+model Event {
+  id              Int         @id @default(autoincrement())
+  organizationId  Int
+  authUserId      String
+  name            String
+  slug            String
+  description     String?
+  location        String?
+  coverImage      String?
+  startsAt        DateTime
+  endsAt          DateTime?
+  capacity        Int?
+  status          EventStatus @default(DRAFT)
+  requireApproval Boolean     @default(false)
+  isPublic        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @default(now())
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([status])
+}
+
+model RegistrationField {
+  id        Int       @id @default(autoincrement())
+  eventId   Int
+  key       String
+  label     String
+  type      FieldType @default(TEXT)
+  options   String?
+  required  Boolean   @default(false)
+  position  Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  @@unique([eventId, key])
+  @@index([eventId])
+}
+
+enum MatchStatus {
+  PENDING
+  SCHEDULED
+  LIVE
+  COMPLETED
+}
+
+enum TournamentStatus {
+  DRAFT
+  REGISTRATION
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+}
+
+enum TournamentType {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  ROUND_ROBIN
+  SWISS
+}
+
+model Registration {
+  id             Int                @id @default(autoincrement())
+  eventId        Int
+  organizationId Int
+  authUserId     String
+  name           String
+  email          String
+  phone          String?
+  status         RegistrationStatus @default(CONFIRMED)
+  answers        Json?
+  checkInCode    String             @unique
+  checkedInAt    DateTime?
+  checkInMethod  CheckInMethod?
+  checkedInBy    String?
+  note           String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @default(now())
+
+  @@unique([eventId, authUserId])
+  @@index([eventId])
+  @@index([authUserId])
+  @@index([organizationId])
+}
+
+model Tournament {
+  id             Int              @id @default(autoincrement())
+  organizationId Int
+  eventId        Int?
+  authUserId     String
+  name           String
+  slug           String
+  description    String?          @db.Text
+  game           String
+  gameFormat     String           @default("5v5")
+  tournamentType TournamentType   @default(SINGLE_ELIMINATION)
+  status         TournamentStatus @default(REGISTRATION)
+  prizePool      String?
+  rules          String?          @db.Text
+  maxTeams       Int              @default(16)
+  matchType      String           @default("BO3")
+  coverImage     String?
+  streamUrl      String?
+  startsAt       DateTime
+  endsAt         DateTime?
+  isPublic       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([status])
+  @@index([game])
+}
+
+model TournamentTeam {
+  id             Int      @id @default(autoincrement())
+  tournamentId   Int
+  authUserId     String?
+  name           String
+  tag            String?
+  logo           String?
+  captainName    String
+  captainEmail   String
+  captainDiscord String?
+  seed           Int?
+  players        Json?
+  status         String   @default("CONFIRMED")
+  checkInCode    String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+
+  @@index([tournamentId])
+  @@index([authUserId])
+}
+
+model TournamentMatch {
+  id           Int         @id @default(autoincrement())
+  tournamentId Int
+  round        Int
+  matchNumber  Int
+  stage        String      @default("WINNERS")
+  team1Id      Int?
+  team2Id      Int?
+  team1Score   Int         @default(0)
+  team2Score   Int         @default(0)
+  winnerId     Int?
+  nextMatchId  Int?
+  status       MatchStatus @default(PENDING)
+  scheduledAt  DateTime?
+  vodUrl       String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now())
+
+  @@index([tournamentId])
+  @@index([round])
+}

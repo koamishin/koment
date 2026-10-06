@@ -13,12 +13,16 @@ export function EmptyPlaceholder({
   return (
     <div
       className={cn(
-        "flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center animate-in fade-in-50",
+        "relative flex min-h-[400px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border/70 bg-card/30 p-10 text-center",
         className,
       )}
       {...props}
     >
-      <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-0 h-40 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl"
+      />
+      <div className="relative mx-auto flex max-w-md flex-col items-center justify-center text-center">
         {children}
       </div>
     </div>
@@ -41,8 +45,8 @@ EmptyPlaceholder.Icon = function EmptyPlaceHolderIcon({
   }
 
   return (
-    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-      <Icon className={cn("h-10 w-10", className)} />
+    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-border/70 bg-gradient-to-br from-primary/20 to-primary/5 shadow-inner">
+      <Icon className={cn("h-7 w-7 text-primary", className)} />
     </div>
   );
 };
@@ -55,7 +59,10 @@ EmptyPlaceholder.Title = function EmptyPlaceholderTitle({
 }: EmptyPlacholderTitleProps) {
   return (
     // eslint-disable-next-line jsx-a11y/heading-has-content
-    <h2 className={cn("mt-6 text-xl font-semibold", className)} {...props} />
+    <h2
+      className={cn("mt-6 font-heading text-xl font-semibold", className)}
+      {...props}
+    />
   );
 };
 
@@ -69,7 +76,7 @@ EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
   return (
     <p
       className={cn(
-        "mb-8 mt-2 text-center text-sm font-normal leading-6 text-muted-foreground",
+        "mb-8 mt-2 text-center text-sm font-normal leading-relaxed text-muted-foreground",
         className,
       )}
       {...props}

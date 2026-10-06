@@ -1,6 +1,10 @@
 import { match as matchLocale } from "@formatjs/intl-localematcher";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from 'next/server';
+import {
+  clerkMiddleware,
+  createRouteMatcher,
+  currentUser,
+} from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 import Negotiator from "negotiator";
 
 import { i18n } from "~/config/i18n-config";
@@ -17,8 +21,12 @@ export const isPublicRoute = createRouteMatcher([
   new RegExp("/(\\w{2}/)?docs(.*)"),
   new RegExp("/(\\w{2}/)?blog(.*)"),
   new RegExp("/(\\w{2}/)?pricing(.*)"),
+  // Public event and tournament discovery + detail. Anchored to the top level so it cannot
+  // match tenant routes such as /dashboard/organizations/:id/events/:id.
+  new RegExp("^/\\w{2}/?events(/.*)?$|^/events(/.*)?$"),
+  new RegExp("^/\\w{2}/?tournaments(/.*)?$|^/tournaments(/.*)?$"),
   new RegExp("^/\\w{2}$"), // root with locale
-])
+]);
 
 export function getLocale(request: NextRequest): string | undefined {
   // Negotiator expects plain object so we need to transform headers
@@ -76,27 +84,47 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
     return null;
   }
 
-  const { userId, sessionClaims } = await auth()
+  const { userId, sessionClaims } = await auth();
 
   const isAuth = !!userId;
-  let isAdmin = false
-  if (env.ADMIN_EMAIL) {
-    const adminEmails = env.ADMIN_EMAIL.split(",");
-    if (sessionClaims?.user?.email) {
-      isAdmin = adminEmails.includes(sessionClaims?.user?.email);
-    }
-  }
 
+  async function resolveIsAdmin(): Promise<boolean> {
+    if (!env.ADMIN_EMAIL) {
+      return false;
+    }
+    const adminEmails = env.ADMIN_EMAIL.split(",");
+    // Fast path for deployments with a customized session token.
+    if (sessionClaims?.user?.email) {
+      return adminEmails.includes(sessionClaims.user.email);
+    }
+    // Default Clerk session tokens carry no `user` claim, so fall back to
+    // the Backend API. Only the admin route pays for this lookup.
+    const clerkUser = await currentUser();
+    const email =
+      clerkUser?.emailAddresses.find(
+        (address) => address.id === clerkUser.primaryEmailAddressId,
+      )?.emailAddress ??
+      clerkUser?.emailAddresses[0]?.emailAddress ??
+      null;
+    return !!email && adminEmails.includes(email);
+  }
   const isAuthPage = /^\/[a-zA-Z]{2,}\/(login|register|login-clerk)/.test(
     req.nextUrl.pathname,
   );
-  const isAuthRoute = req.nextUrl.pathname.startsWith("/api/trpc/");
+  // Handlers that own their own authorization must not be HTML-redirected:
+  // tRPC uses protectedProcedure (and public procedures for event discovery),
+  // and the CSV export returns 401. /api/auth is deliberately left on the
+  // legacy path because the bundled NextAuth config is a stub.
+  const isSelfAuthorizingApiRoute =
+    req.nextUrl.pathname.startsWith("/api/trpc/") ||
+    req.nextUrl.pathname.startsWith("/trpc/") ||
+    req.nextUrl.pathname.startsWith("/api/events/");
   const locale = getLocale(req);
-  if (isAuthRoute && isAuth) {
+  if (isSelfAuthorizingApiRoute) {
     return NextResponse.next();
   }
   if (req.nextUrl.pathname.startsWith("/admin/dashboard")) {
-    if (!isAuth || !isAdmin)
+    if (!isAuth || !(await resolveIsAdmin()))
       return NextResponse.redirect(new URL(`/admin/login`, req.url));
     return NextResponse.next();
   }
@@ -112,7 +140,10 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
       from += req.nextUrl.search;
     }
     return NextResponse.redirect(
-      new URL(`/${locale}/login-clerk?from=${encodeURIComponent(from)}`, req.url),
+      new URL(
+        `/${locale}/login-clerk?from=${encodeURIComponent(from)}`,
+        req.url,
+      ),
     );
   }
-})
+});

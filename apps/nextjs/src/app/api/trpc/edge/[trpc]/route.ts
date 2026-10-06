@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 import type {NextRequest} from "next/server";
 import {fetchRequestHandler} from "@trpc/server/adapters/fetch";
 
@@ -6,10 +7,11 @@ import {edgeRouter} from "@saasfly/api/edge";
 import {getAuth} from "@clerk/nextjs/server";
 
 // export const runtime = "edge";
+export const dynamic = "force-dynamic";
 const createContext = async (req: NextRequest) => {
     return createTRPCContext({
         headers: req.headers,
-        auth: getAuth(req),
+        auth: getAuth(req as any),
     });
 };
 

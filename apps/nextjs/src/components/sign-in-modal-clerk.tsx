@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { OAuthStrategy } from "@clerk/types";
 import { useSignIn } from "@clerk/nextjs";
 
@@ -9,7 +8,6 @@ import { Button } from "@saasfly/ui/button";
 import * as Icons from "@saasfly/ui/icons";
 
 import { Modal } from "~/components/modal";
-import { siteConfig } from "~/config/site";
 import { useSigninModal } from "~/hooks/use-signin-modal";
 
 export const SignInClerkModal = ({ dict }: { dict: Record<string, string> }) => {
@@ -33,11 +31,10 @@ export const SignInClerkModal = ({ dict }: { dict: Record<string, string> }) => 
       .then((res) => {
         console.log(res)
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors)
-        console.error(err, null, 2)
+        console.error(err);
       })
   }
 
@@ -45,15 +42,9 @@ export const SignInClerkModal = ({ dict }: { dict: Record<string, string> }) => 
     <Modal showModal={signInModal.isOpen} setShowModal={signInModal.onClose}>
       <div className="w-full">
         <div className="flex flex-col items-center justify-center space-y-3 border-b border-neutral-200 dark:border-neutral-800 bg-background px-4 py-6 pt-8 text-center md:px-16">
-          <a href={siteConfig.url}>
-            <Image
-              src="/images/avatars/saasfly-logo.svg"
-              className="mx-auto"
-              width="64"
-              height="64"
-              alt=""
-            />
-          </a>
+          <div className="flex items-center gap-2">
+            <span className="font-black text-3xl tracking-tight text-foreground">Koment</span>
+          </div>
           <h3 className="font-urban text-2xl font-bold">{dict.signup}</h3>
           <p className="text-sm text-gray-500 dark:text-zinc-400">{dict.privacy}</p>
         </div>

@@ -23,6 +23,9 @@ const config = {
   pageExtensions: ["ts", "tsx", "mdx"],
   experimental: {
     mdxRs: true,
+    // Keep the Postgres driver out of the server bundle: pg ships optional
+    // native bindings and kysely resolves its dialect at runtime.
+    serverComponentsExternalPackages: ["pg", "kysely"],
     // serverActions: true,
   },
   images: {

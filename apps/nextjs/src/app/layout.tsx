@@ -36,40 +36,85 @@ export function generateStaticParams() {
 
 export const metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    default: "Koment | Event Management & Esports Tournament Engine",
+    template: `%s | Koment`,
   },
-  description: siteConfig.description,
+  description:
+    "The all-in-one SaaS platform for hosting physical and virtual events, automated single & double elimination esports brackets, custom registration forms, and instant QR check-in.",
   keywords: [
-    "Next.js",
-    "Shadcn ui",
-    "Sass",
-    "Fast ",
-    "Simple ",
-    "Easy",
-    "Cloud Native",
+    "Koment",
+    "Esports Tournament Maker",
+    "Tournament Bracket Generator",
+    "Event Management SaaS",
+    "LAN Party Organizer",
+    "Single Elimination Bracket",
+    "Double Elimination Bracket",
+    "QR Code Event Check-in",
+    "Live Esports Scoring",
+    "Gaming Competitions",
+    "Event Ticketing Platform",
+    "Valorant Tournament",
+    "CS2 Tournament",
+    "League of Legends Tournament",
   ],
   authors: [
     {
-      name: "saasfly",
+      name: "koamishin",
+      url: "https://github.com/koamishin",
+    },
+    {
+      name: "Koment Team",
+      url: "https://github.com/koamishin/koment",
     },
   ],
-  creator: "Saasfly",
+  creator: "Koment",
+  publisher: "koamishin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
+    title: "Koment | Event Management & Esports Tournament Engine",
+    description:
+      "Host esports championships, manage live single & double elimination brackets, handle attendee registrations, and automate door QR check-in.",
+    siteName: "Koment",
+    images: [
+      {
+        url: `${siteConfig.url}/og.png`,
+        width: 1200,
+        height: 630,
+        alt: "Koment - Event Management & Esports Tournament Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Koment | Event Management & Esports Tournament Engine",
+    description:
+      "Host esports championships, manage live single & double elimination brackets, handle attendee registrations, and automate door QR check-in.",
+    images: [`${siteConfig.url}/og.png`],
+    creator: "@koment_gg",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   icons: {
     icon: "/logo.svg",
-    // shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  metadataBase: new URL("https://show.saasfly.io/"),
-  // manifest: `${siteConfig.url}/site.webmanifest`,
+  metadataBase: new URL(siteConfig.url),
 };
 
 export default function RootLayout({

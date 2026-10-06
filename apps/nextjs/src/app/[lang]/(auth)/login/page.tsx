@@ -1,6 +1,5 @@
 import React from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@saasfly/ui";
@@ -40,13 +39,10 @@ export default async function LoginPage({
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
-          <Image
-            src="/images/avatars/saasfly-logo.svg"
-            className="mx-auto"
-            width="64"
-            height="64"
-            alt=""
-          />
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Icons.Trophy className="h-10 w-10 text-amber-500" />
+            <span className="font-black text-3xl tracking-tight">Koment</span>
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight">
             {dict.login.welcome_back}
           </h1>

@@ -9,19 +9,12 @@ export function Questions() {
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger>About Saasfly</AccordionTrigger>
+        <AccordionTrigger>About Koment</AccordionTrigger>
         <AccordionContent>
-          Nextify Limited’s team of experienced developers has invested years
-          into refining our software development methodologies. We’re proud to
-          present our starter kit, a culmination of best practices and proven
-          tools extracted from countless successful projects. This extensively
-          tested kit is more than just code, it’s a cornerstone of our daily
-          operations, consistently helping us deliver exceptional results for
-          our clients. While informed by our unique experiences, the kit’s
-          solutions are meticulously chosen to address common challenges and fit
-          a wide range of scenarios. We believe it offers a streamlined and
-          efficient framework for building SaaS products, empowering you to
-          achieve your project goals.
+          Koment is a next-generation event management SaaS and esports tournament maker
+          built for gaming leagues, universities, LAN parties, and corporate events.
+          Manage registrations, dynamic forms, live single and double elimination brackets,
+          match scoring, and door QR ticket scanning in one unified command center.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">

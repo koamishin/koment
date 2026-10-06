@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./enums": "./prisma/enums.ts",
+    "./types": "./prisma/types.ts"
   },
   "main": "./index.ts",
   "types": "./index.ts",
@@ -17,20 +19,20 @@
     "with-env": "dotenv -e ../../.env.local --"
   },
   "dependencies": {
-    "kysely": "0.27.3",
-    "@vercel/postgres-kysely": "0.8.0"
+    "@types/pg": "8.23.1",
+    "kysely": "0.27.6",
+    "pg": "8.23.1"
   },
   "devDependencies": {
     "@saasfly/eslint-config": "workspace:*",
     "@saasfly/prettier-config": "workspace:*",
     "@saasfly/typescript-config": "workspace:*",
-    "dotenv-cli": "7.3.0",
+    "dotenv-cli": "7.4.4",
     "eslint": "8.57.0",
-    "prettier": "3.2.5",
-    "prisma": "5.9.1",
+    "prettier": "3.9.9",
+    "prisma": "5.22.0",
     "prisma-kysely": "1.7.1",
-    "@types/pg": "8.11.0",
-    "typescript": "5.4.5"
+    "typescript": "5.9.3"
   },
   "eslintConfig": {
     "root": true,

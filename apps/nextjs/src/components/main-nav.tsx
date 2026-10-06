@@ -29,13 +29,16 @@ export function MainNav({ items, children, params: { lang }, marketing }: MainNa
   return (
     <div className="flex gap-6 md:gap-10">
       <div className="flex items-center">
-        <Link href={`/${lang}`} className="hidden items-center space-x-2 md:flex">
-          <div className="text-3xl">Saasfly</div>
+        <Link href={`/${lang}`} className="hidden items-center space-x-2.5 md:flex">
+          <Icons.Trophy className="h-6 w-6 text-amber-500" />
+          <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-primary via-purple-500 to-amber-500 bg-clip-text text-transparent">
+            Koment
+          </span>
         </Link>
 
-        <Link href="https://docs.saasfly.io" target="_blank" className="ml-4 hidden md:flex lg:flex xl:flex">
+        <Link href={`/${lang}/tournaments`} className="ml-4 hidden md:flex lg:flex xl:flex">
           <DocumentGuide>
-            {typeof marketing?.introducing === "string" ? marketing?.introducing : "Introducing Saasfly"}
+            {typeof marketing?.introducing === "string" ? marketing?.introducing : "Introducing Koment"}
           </DocumentGuide>
         </Link>
       </div>

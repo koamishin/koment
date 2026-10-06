@@ -1,5 +1,6 @@
-import { createKysely } from "@vercel/postgres-kysely";
 import type { GeneratedAlways } from "kysely";
+
+import { createDb } from "@saasfly/db";
 
 interface Database {
   User: {
@@ -36,4 +37,4 @@ interface Database {
   };
 }
 
-export const db = createKysely<Database>();
+export const db = createDb<Database>();
