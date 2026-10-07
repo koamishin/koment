@@ -5,7 +5,7 @@ import {
   currentUser,
 } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextFetchEvent, NextRequest } from "next/server";
 import Negotiator from "negotiator";
 
 import { i18n } from "~/config/i18n-config";
@@ -60,7 +60,7 @@ export function isNoNeedProcess(request: NextRequest): boolean {
   return noNeedProcessRoute.some((route) => new RegExp(route).test(pathname));
 }
 
-export const middleware = clerkMiddleware(
+const clerkHandler = clerkMiddleware(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   async (auth, req: NextRequest) => {
@@ -177,3 +177,25 @@ export const middleware = clerkMiddleware(
     publishableKey,
   },
 );
+
+export const middleware = async (
+  req: NextRequest,
+  event: NextFetchEvent,
+): Promise<NextResponse | Response | null | void> => {
+  try {
+    // @ts-expect-error - @clerk/nextjs bundled next types compatibility
+    return await clerkHandler(req, event);
+  } catch (err) {
+    console.error("Clerk middleware error caught:", err);
+    const url = new URL(req.url);
+    if (
+      url.searchParams.has("__clerk_handshake") ||
+      url.searchParams.has("__clerk_help")
+    ) {
+      url.searchParams.delete("__clerk_handshake");
+      url.searchParams.delete("__clerk_help");
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+};
