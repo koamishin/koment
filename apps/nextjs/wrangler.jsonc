@@ -11,5 +11,8 @@
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
+  },
+  "vars": {
+    "CLERK_SECRET_KEY": "sk_test_mock_secret_key"
   }
 }

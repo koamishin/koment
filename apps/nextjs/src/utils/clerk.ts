@@ -15,11 +15,17 @@ const publishableKey = sanitizeClerkPublishableKey(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 );
 
+if (!process.env.CLERK_SECRET_KEY) {
+  process.env.CLERK_SECRET_KEY = "sk_test_mock_clerk_secret_key";
+}
+
 const noNeedProcessRoute = [".*\\.png", ".*\\.jpg", ".*\\.opengraph-image.png"];
 
 const noRedirectRoute = ["/api(.*)", "/trpc(.*)", "/admin"];
 
 export const isPublicRoute = createRouteMatcher([
+  new RegExp("^/$"),
+  new RegExp("^/\\w{2}/?$"),
   new RegExp("/(\\w{2}/)?signin(.*)"),
   new RegExp("/(\\w{2}/)?terms(.*)"),
   new RegExp("/(\\w{2}/)?privacy(.*)"),
@@ -30,7 +36,6 @@ export const isPublicRoute = createRouteMatcher([
   // match tenant routes such as /dashboard/organizations/:id/events/:id.
   new RegExp("^/\\w{2}/?events(/.*)?$|^/events(/.*)?$"),
   new RegExp("^/\\w{2}/?tournaments(/.*)?$|^/tournaments(/.*)?$"),
-  new RegExp("^/\\w{2}$"), // root with locale
 ]);
 
 export function getLocale(request: NextRequest): string | undefined {
