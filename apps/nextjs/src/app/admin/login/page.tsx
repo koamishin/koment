@@ -69,7 +69,7 @@ export default function LoginPage() {
                 setIsGitHubLoading(true);
                 signIn("github", {
                   redirect: true,
-                  callbackUrl: "http://localhost:3000/admin/dashboard",
+                  callbackUrl: "/admin/dashboard",
                 }).catch((error) => {
                   console.error("GitHub signIn error:", error);
                 });

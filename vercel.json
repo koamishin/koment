@@ -1,5 +1,40 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "github": {
     "silent": true
-  }
+  },
+  "services": {
+    "auth-proxy": {
+      "root": "apps/auth-proxy",
+      "framework": "nitro",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "nextjs",
+          "format": "url",
+          "env": "AUTH_REDIRECT_PROXY_URL"
+        }
+      ]
+    },
+    "nextjs": {
+      "root": "apps/nextjs",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "auth-proxy",
+          "format": "url",
+          "env": "AUTH_PROXY_URL"
+        }
+      ]
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "nextjs"
+      }
+    }
+  ]
 }
