@@ -54,3 +54,4 @@ package-lock.json
 .alchemy/
 .open-next/
 .wrangler/
+worker-configuration.d.ts
