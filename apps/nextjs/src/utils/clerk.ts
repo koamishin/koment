@@ -4,11 +4,16 @@ import {
   createRouteMatcher,
   currentUser,
 } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import Negotiator from "negotiator";
 
 import { i18n } from "~/config/i18n-config";
-import { env } from "@saasfly/auth/env.mjs";
+import { sanitizeClerkPublishableKey } from "./clerk-key";
+
+const publishableKey = sanitizeClerkPublishableKey(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+);
 
 const noNeedProcessRoute = [".*\\.png", ".*\\.jpg", ".*\\.opengraph-image.png"];
 
@@ -50,64 +55,80 @@ export function isNoNeedProcess(request: NextRequest): boolean {
   return noNeedProcessRoute.some((route) => new RegExp(route).test(pathname));
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
-  if (isNoNeedProcess(req)) {
-    return null;
-  }
-
-  const isWebhooksRoute = req.nextUrl.pathname.startsWith("/api/webhooks/");
-  if (isWebhooksRoute) {
-    return NextResponse.next();
-  }
-  const pathname = req.nextUrl.pathname;
-  // Check if there is any supported locale in the pathname
-  const pathnameIsMissingLocale = i18n.locales.every(
-    (locale) =>
-      !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
-  );
-  // Redirect if there is no locale
-  if (!isNoRedirect(req) && pathnameIsMissingLocale) {
-    const locale = getLocale(req);
-    return NextResponse.redirect(
-      new URL(
-        `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
-        req.url,
-      ),
-    );
-  }
-
+export const middleware = clerkMiddleware(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  if (isPublicRoute(req)) {
-    return null;
-  }
-
-  const { userId, sessionClaims } = await auth();
-
-  const isAuth = !!userId;
-
-  async function resolveIsAdmin(): Promise<boolean> {
-    if (!env.ADMIN_EMAIL) {
-      return false;
+  async (auth, req: NextRequest) => {
+    if (isNoNeedProcess(req)) {
+      return null;
     }
-    const adminEmails = env.ADMIN_EMAIL.split(",");
-    // Fast path for deployments with a customized session token.
-    if (sessionClaims?.user?.email) {
-      return adminEmails.includes(sessionClaims.user.email);
+
+    const isWebhooksRoute = req.nextUrl.pathname.startsWith("/api/webhooks/");
+    if (isWebhooksRoute) {
+      return NextResponse.next();
     }
-    // Default Clerk session tokens carry no `user` claim, so fall back to
-    // the Backend API. Only the admin route pays for this lookup.
-    const clerkUser = await currentUser();
-    const email =
-      clerkUser?.emailAddresses.find(
-        (address) => address.id === clerkUser.primaryEmailAddressId,
-      )?.emailAddress ??
-      clerkUser?.emailAddresses[0]?.emailAddress ??
-      null;
-    return !!email && adminEmails.includes(email);
-  }
+    const pathname = req.nextUrl.pathname;
+    // Check if there is any supported locale in the pathname
+    const pathnameIsMissingLocale = i18n.locales.every(
+      (locale) =>
+        !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
+    );
+    // Redirect if there is no locale
+    if (!isNoRedirect(req) && pathnameIsMissingLocale) {
+      const locale = getLocale(req);
+      return NextResponse.redirect(
+        new URL(
+          `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
+          req.url,
+        ),
+      );
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    if (isPublicRoute(req)) {
+      return null;
+    }
+
+    let isAuth = false;
+    let userClaims: Record<string, unknown> | null = null;
+    try {
+      const authData = await auth();
+      isAuth = Boolean(authData.userId);
+      userClaims =
+        (authData.sessionClaims as Record<string, unknown> | null) ?? null;
+    } catch {
+      isAuth = false;
+    }
+
+    async function resolveIsAdmin(): Promise<boolean> {
+      const adminEmailConfig = process.env.ADMIN_EMAIL;
+      if (!adminEmailConfig) {
+        return false;
+      }
+      const adminEmails = adminEmailConfig.split(",");
+      // Fast path for deployments with a customized session token.
+      const sessionUser = userClaims?.user as
+        | { email?: string }
+        | undefined;
+      if (sessionUser?.email) {
+        return adminEmails.includes(sessionUser.email);
+      }
+      // Default Clerk session tokens carry no `user` claim, so fall back to
+      // the Backend API. Only the admin route pays for this lookup.
+      try {
+        const clerkUser = await currentUser();
+        const email =
+          clerkUser?.emailAddresses.find(
+            (address) => address.id === clerkUser.primaryEmailAddressId,
+          )?.emailAddress ??
+          clerkUser?.emailAddresses[0]?.emailAddress ??
+          null;
+        return !!email && adminEmails.includes(email);
+      } catch {
+        return false;
+      }
+    }
   const isAuthPage = /^\/[a-zA-Z]{2,}\/(login|register|login-clerk)/.test(
     req.nextUrl.pathname,
   );
@@ -146,4 +167,8 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
       ),
     );
   }
-});
+  },
+  {
+    publishableKey,
+  },
+);
