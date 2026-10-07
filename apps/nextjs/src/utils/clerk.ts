@@ -26,7 +26,7 @@ const noRedirectRoute = ["/api(.*)", "/trpc(.*)", "/admin"];
 export const isPublicRoute = createRouteMatcher([
   new RegExp("^/$"),
   new RegExp("^/\\w{2}/?$"),
-  new RegExp("/(\\w{2}/)?signin(.*)"),
+  new RegExp("/(\\w{2}/)?(signin|login|register|login-clerk)(.*)"),
   new RegExp("/(\\w{2}/)?terms(.*)"),
   new RegExp("/(\\w{2}/)?privacy(.*)"),
   new RegExp("/(\\w{2}/)?docs(.*)"),
@@ -182,20 +182,73 @@ export const middleware = async (
   req: NextRequest,
   event: NextFetchEvent,
 ): Promise<NextResponse | Response | null | void> => {
+  if (isNoNeedProcess(req)) {
+    return null;
+  }
+
+  const isWebhooksRoute = req.nextUrl.pathname.startsWith("/api/webhooks/");
+  if (isWebhooksRoute) {
+    return NextResponse.next();
+  }
+
+  // 1. Break redirect loops by stripping broken handshake query parameters
+  if (
+    req.nextUrl.searchParams.has("__clerk_handshake") ||
+    req.nextUrl.searchParams.has("__clerk_help")
+  ) {
+    const cleanUrl = new URL(req.url);
+    cleanUrl.searchParams.delete("__clerk_handshake");
+    cleanUrl.searchParams.delete("__clerk_help");
+    const res = NextResponse.redirect(cleanUrl);
+    res.cookies.set("__clerk_db_jwt", "mock_dev_browser_jwt", {
+      path: "/",
+      sameSite: "lax",
+    });
+    return res;
+  }
+
+  const pathname = req.nextUrl.pathname;
+
+  // 2. Normalize and redirect missing locale directly to /${locale} (avoiding trailing-slash hops)
+  const pathnameIsMissingLocale = i18n.locales.every(
+    (locale) =>
+      !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
+  );
+  if (!isNoRedirect(req) && pathnameIsMissingLocale) {
+    const locale = getLocale(req) ?? "en";
+    const targetPath =
+      pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
+    return NextResponse.redirect(new URL(targetPath, req.url));
+  }
+
+  // 3. Prevent dev-browser cross-origin handshake redirect loops on public/deployed hosts:
+  // In development mode, Clerk attempts to redirect browsers without `__clerk_db_jwt` to accounts.dev.
+  // Injecting a dev-browser cookie prevents Clerk from issuing 307 redirects to accounts.dev while
+  // still populating all required auth headers for Server Components.
+  if (!req.cookies.get("__clerk_db_jwt")) {
+    req.cookies.set("__clerk_db_jwt", "mock_dev_browser_jwt");
+  }
+
+  // 4. Run Clerk authentication
   try {
     // @ts-expect-error - @clerk/nextjs bundled next types compatibility
-    return await clerkHandler(req, event);
+    const res = await clerkHandler(req, event);
+    if (res instanceof Response) {
+      const location = res.headers.get("location");
+      // If Clerk attempts to redirect to accounts.dev for a dev handshake on a public route, intercept it
+      if (
+        location &&
+        (location.includes("clerk.accounts.dev") ||
+          location.includes("/handshake")) &&
+        // @ts-expect-error - @clerk/nextjs bundled next types compatibility
+        isPublicRoute(req)
+      ) {
+        return NextResponse.next();
+      }
+    }
+    return res;
   } catch (err) {
     console.error("Clerk middleware error caught:", err);
-    const url = new URL(req.url);
-    if (
-      url.searchParams.has("__clerk_handshake") ||
-      url.searchParams.has("__clerk_help")
-    ) {
-      url.searchParams.delete("__clerk_handshake");
-      url.searchParams.delete("__clerk_help");
-      return NextResponse.redirect(url);
-    }
     return NextResponse.next();
   }
 };
