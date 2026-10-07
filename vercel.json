@@ -3,6 +3,13 @@
   "github": {
     "silent": true
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/en",
+      "permanent": false
+    }
+  ],
   "services": {
     "auth-proxy": {
       "root": "apps/auth-proxy",
