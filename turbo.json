@@ -22,7 +22,14 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", ".open-next/**", ".output/**", "next-env.d.ts"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        ".open-next/**",
+        ".output/**",
+        ".vercel/output/**",
+        "next-env.d.ts"
+      ]
     },
     "dev": {
       "persistent": true,

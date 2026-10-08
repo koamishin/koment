@@ -21,6 +21,8 @@ apps/expo/.gitignore
 
 # production
 build
+.output
+.nitro
 
 # misc
 .DS_Store
