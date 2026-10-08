@@ -13,15 +13,7 @@
   "services": {
     "auth-proxy": {
       "root": "apps/auth-proxy",
-      "framework": "nitro",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "nextjs",
-          "format": "url",
-          "env": "AUTH_REDIRECT_PROXY_URL"
-        }
-      ]
+      "framework": "nitro"
     },
     "nextjs": {
       "root": "apps/nextjs",
