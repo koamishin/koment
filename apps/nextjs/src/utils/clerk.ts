@@ -61,8 +61,6 @@ export function isNoNeedProcess(request: NextRequest): boolean {
 }
 
 const clerkHandler = clerkMiddleware(
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   async (auth, req: NextRequest) => {
     if (isNoNeedProcess(req)) {
       return null;
@@ -89,8 +87,6 @@ const clerkHandler = clerkMiddleware(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     if (isPublicRoute(req)) {
       return null;
     }
@@ -231,7 +227,6 @@ export const middleware = async (
 
   // 4. Run Clerk authentication
   try {
-    // @ts-expect-error - @clerk/nextjs bundled next types compatibility
     const res = await clerkHandler(req, event);
     if (res instanceof Response) {
       const location = res.headers.get("location");
@@ -240,7 +235,6 @@ export const middleware = async (
         location &&
         (location.includes("clerk.accounts.dev") ||
           location.includes("/handshake")) &&
-        // @ts-expect-error - @clerk/nextjs bundled next types compatibility
         isPublicRoute(req)
       ) {
         return NextResponse.next();
